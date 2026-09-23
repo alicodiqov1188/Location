@@ -322,6 +322,23 @@ function AdminView({ telegramUser }) {
     loadPoints();
   }, [loadPoints]);
 
+  // Center the map on the admin's real location as soon as the page opens —
+  // a one-shot GPS read, independent of the "start tracking" toggle, so the
+  // map never sits on the Tashkent fallback while waiting for a button press.
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setCurrentPos((prev) => prev ?? { lat: position.coords.latitude, lng: position.coords.longitude });
+        },
+        () => {
+          /* silent — falls back to Tashkent center if permission denied */
+        },
+        { enableHighAccuracy: true, timeout: 10000, maximumAge: 60000 }
+      );
+    }
+  }, []);
+
   const sendLocation = useCallback(
     async (lat, lng) => {
       try {
@@ -468,6 +485,7 @@ function AdminView({ telegramUser }) {
               </Popup>
             </Marker>
           ))}
+          {currentPos && <RecenterOnce lat={currentPos.lat} lng={currentPos.lng} />}
         </MapContainer>
 
         {statusMsg && (
