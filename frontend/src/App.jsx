@@ -62,12 +62,19 @@ function timeAgo(isoString) {
 
   if (diffSec < 10) return "hozirgina";
   if (diffSec < 60) return `${diffSec} soniya oldin`;
+
   const diffMin = Math.floor(diffSec / 60);
   if (diffMin < 60) return `${diffMin} daqiqa oldin`;
+
   const diffHr = Math.floor(diffMin / 60);
-  if (diffHr < 24) return `${diffHr} soat oldin`;
+  const remMin = diffMin % 60;
+  if (diffHr < 24) {
+    return remMin > 0 ? `${diffHr} soat ${remMin} daqiqa oldin` : `${diffHr} soat oldin`;
+  }
+
   const diffDay = Math.floor(diffHr / 24);
-  return `${diffDay} kun oldin`;
+  const remHr = diffHr % 24;
+  return remHr > 0 ? `${diffDay} kun ${remHr} soat oldin` : `${diffDay} kun oldin`;
 }
 
 function authFields(telegramUser) {
